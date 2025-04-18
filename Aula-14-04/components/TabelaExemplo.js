@@ -1,32 +1,81 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 
 const TabelaExemplo = () => {
-  const [dados, setDados] = useState([
-    { id: "1", nome: "Jõao", valor: "100" },
-    { id: "2", nome: "Zeca", valor: "200" },
-    { id: "3", nome: "Joel", valor: "300" },
-  ]);
+  const [tarefa, setTarefa] = useState("");
+  const [listaTarefas, setListaTarefas] = useState([]);
+
+  const adicionarTarefa = () => {
+    if (tarefa.trim() === "") return;
+    const novaTarefa = {
+      id: `${Date.now()}-${Math.random()}`, // ID bem único porque você parece confuso
+      titulo: tarefa,
+    };
+    setListaTarefas((prev) => [...prev, novaTarefa]);
+    setTarefa("");
+  };
+
+  const confirmarRemocao = (id) => {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja remover esta tarefa?"
+    );
+    if (confirmar) {
+      removerTarefa(id);
+    }
+  };
+
+  const removerTarefa = (id) => {
+    setListaTarefas((prev) => prev.filter((item) => item.id !== id));
+  };
 
   const renderItem = ({ item }) => (
-    <View style={styles.row}>
-      <Text style={styles.cell}>{item.id}</Text>
-      <Text style={styles.cell}>{item.nome}</Text>
-      <Text style={styles.cell}>{item.valor}</Text>
+    <View style={styles.tarefaContainer}>
+      <Text style={styles.tarefaTexto}>{item.titulo}</Text>
+      <TouchableOpacity
+        onPress={() => confirmarRemocao(item.id)}
+        style={styles.botaoRemover}
+      >
+        <Text style={styles.removerTexto}>✕</Text>
+      </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>ID</Text>
-        <Text style={styles.headerText}>NOME</Text>
-        <Text style={styles.headerText}>VALOR</Text>
+      <Text style={styles.titulo}>📋 Lista de Tarefas</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Adicione uma nova tarefa..."
+          placeholderTextColor="#aaa"
+          value={tarefa}
+          onChangeText={setTarefa}
+        />
+        <TouchableOpacity
+          style={styles.botaoAdicionar}
+          onPress={adicionarTarefa}
+        >
+          <Text style={styles.textoBotao}>+</Text>
+        </TouchableOpacity>
       </View>
+
       <FlatList
-        data={dados}
+        data={listaTarefas}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <Text style={styles.vazioTexto}>
+            Nenhuma tarefa ainda. Vai lá, campeão.
+          </Text>
+        }
       />
     </View>
   );
@@ -35,43 +84,75 @@ const TabelaExemplo = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 16,
+    backgroundColor: "#f0f4f8",
+    padding: 20,
+    paddingTop: 60,
   },
-
-  header: {
-    flexDirection: "row",
-    backgroundColor: "#4CAF50",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-
-  headerText: {
-    flex: 1,
-    color: "white",
+  titulo: {
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#333",
+    marginBottom: 20,
     textAlign: "center",
-    padding: 5
   },
-
-  row: {
+  inputContainer: {
     flexDirection: "row",
-    backgroundColor: "white",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-
+    marginBottom: 24,
+    alignItems: "center",
+    marginRight: 12,
   },
-
-  cell: {
+  input: {
     flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  botaoAdicionar: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 12,
+    padding: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  textoBotao: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  tarefaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    elevation: 2,
+  },
+  tarefaTexto: {
+    fontSize: 16,
+    color: "#333",
+    flexShrink: 1,
+  },
+  botaoRemover: {
+    backgroundColor: "#ff5252",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  removerTexto: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  vazioTexto: {
     textAlign: "center",
+    color: "#999",
+    fontStyle: "italic",
+    marginTop: 40,
   },
 });
 
