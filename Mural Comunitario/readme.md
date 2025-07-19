@@ -1,4 +1,4 @@
-Mural Comunitário
+Mural Comunitário APP
 
 📱 Visão Geral
 
